@@ -13,6 +13,16 @@ class _ProductListScreenState extends State<ProductListScreen> {
     {"id": 2, "name": "Selada Keriting", "price": 12000},
   ];
 
+  String _getProductImage(String productName) {
+    if (productName.toLowerCase().contains('selada')) {
+      return 'https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
+    } else if (productName.toLowerCase().contains('kangkung')) {
+      return 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
+    } else {
+      return 'https://images.unsplash.com/photo-1540420773420-3366772f4999?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80';
+    }
+  }
+
   void _deleteProduct(int id) {
     setState(() {
       products.removeWhere((product) => product["id"] == id);
@@ -28,9 +38,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF00D4E6), 
-              Color(0xFF8B5CF6), 
-              Color(0xFFE91E63), 
+              Color(0xFF4CAF50), 
+              Color(0xFF2E7D32), 
+              Color(0xFF1B5E20), 
             ],
           ),
         ),
@@ -39,22 +49,53 @@ class _ProductListScreenState extends State<ProductListScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
                   children: [
-                    const Text(
-                      "Daftar Produk",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    // FreshBite Title with Icons
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.restaurant_menu, color: Colors.white.withOpacity(0.9), size: 20),
+                        const SizedBox(width: 8),
+                        const Text(
+                          "FreshBite",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(Icons.eco, color: Colors.white.withOpacity(0.9), size: 20),
+                      ],
                     ),
-                    IconButton(
-                      onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
-                      },
-                      icon: const Icon(Icons.logout, color: Colors.white),
+                    const SizedBox(height: 16),
+                    // Header with logout
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.store, color: Colors.white.withOpacity(0.8), size: 20),
+                            const SizedBox(width: 8),
+                            const Text(
+                              "Daftar Produk",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+                          },
+                          icon: const Icon(Icons.logout, color: Colors.white),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -96,7 +137,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               gradient: LinearGradient(
                                 colors: [
                                   Colors.white,
-                                  Colors.cyan.shade50,
+                                  Colors.green.shade50,
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(15),
@@ -110,6 +151,55 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             ),
                             child: ListTile(
                               contentPadding: const EdgeInsets.all(16),
+                              leading: Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.shade200,
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    _getProductImage(p["name"].toString()),
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.shade100,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            color: Colors.green,
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.shade100,
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Icon(
+                                          Icons.local_grocery_store,
+                                          color: Colors.green.shade600,
+                                          size: 30,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
                               title: Text(
                                 p["name"].toString(),
                                 style: const TextStyle(
@@ -120,7 +210,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               subtitle: Text(
                                 "Rp ${p["price"]}",
                                 style: const TextStyle(
-                                  color: Color(0xFF00D4E6),
+                                  color: Color(0xFF4CAF50),
                                   fontWeight: FontWeight.w600,
                                   fontSize: 14,
                                 ),
@@ -173,8 +263,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             colors: [
-              Color(0xFF00D4E6),
-              Color(0xFFE91E63),
+              Color(0xFF4CAF50),
+              Color(0xFF2E7D32),
             ],
           ),
           borderRadius: BorderRadius.circular(16),

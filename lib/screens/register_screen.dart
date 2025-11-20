@@ -16,16 +16,57 @@ class RegisterScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF00D4E6), 
-              Color(0xFF8B5CF6), 
-              Color(0xFFE91E63), 
+              Color(0xFF4CAF50), // Light Green
+              Color(0xFF2E7D32), // Dark Green
+              Color(0xFF1B5E20), // Very Dark Green
             ],
           ),
         ),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Card(
+            child: Stack(
+              children: [
+                // Decorative plant icons
+                Positioned(
+                  top: 40,
+                  left: 15,
+                  child: Icon(
+                    Icons.local_florist,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 28,
+                  ),
+                ),
+                Positioned(
+                  top: 100,
+                  right: 20,
+                  child: Icon(
+                    Icons.agriculture,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 26,
+                  ),
+                ),
+                Positioned(
+                  bottom: 120,
+                  left: 25,
+                  child: Icon(
+                    Icons.forest,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 30,
+                  ),
+                ),
+                Positioned(
+                  bottom: 200,
+                  right: 35,
+                  child: Icon(
+                    Icons.spa,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 24,
+                  ),
+                ),
+                
+                // Main Card
+                Card(
               elevation: 8,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -35,27 +76,83 @@ class RegisterScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Back button row
                     Row(
                       children: [
                         IconButton(
                           onPressed: () => Navigator.pop(context),
                           icon: const Icon(Icons.arrow_back),
                         ),
-                        Expanded(
-                          child: Text(
-                            "Register",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 48),
+                        const Spacer(),
                       ],
                     ),
-                    const SizedBox(height: 32),
+                    
+                    // Create Account Icon
+                    Container(
+                      width: 70,
+                      height: 70,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFF4CAF50),
+                            Color(0xFF2E7D32),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.green.shade200,
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.person_add,
+                        size: 35,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    
+                    // App Branding
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.nature_people,
+                          color: Colors.green.shade600,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 6),
+                        const Text(
+                          "FreshBite",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF2E7D32),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Icon(
+                          Icons.nature_people,
+                          color: Colors.green.shade600,
+                          size: 18,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    
+                    const Text(
+                      "Register",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
 
                     TextField(
                       controller: nameController,
@@ -67,7 +164,7 @@ class RegisterScreen extends StatelessWidget {
                           borderSide: BorderSide(color: Colors.grey.shade400),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.cyan),
+                          borderSide: BorderSide(color: Colors.green),
                         ),
                       ),
                     ),
@@ -83,7 +180,7 @@ class RegisterScreen extends StatelessWidget {
                           borderSide: BorderSide(color: Colors.grey.shade400),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.cyan),
+                          borderSide: BorderSide(color: Colors.green),
                         ),
                       ),
                     ),
@@ -100,7 +197,7 @@ class RegisterScreen extends StatelessWidget {
                           borderSide: BorderSide(color: Colors.grey.shade400),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.cyan),
+                          borderSide: BorderSide(color: Colors.green),
                         ),
                       ),
                     ),
@@ -113,8 +210,8 @@ class RegisterScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [
-                              Color(0xFF00D4E6), // Cyan
-                              Color(0xFFE91E63), // Pink/Magenta
+              Color(0xFF4CAF50), // Light Green
+              Color(0xFF2E7D32), // Dark Green
                             ],
                           ),
                           borderRadius: BorderRadius.circular(8),
@@ -150,6 +247,8 @@ class RegisterScreen extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
+              ],
             ),
           ),
         ),

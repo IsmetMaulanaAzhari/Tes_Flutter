@@ -24,9 +24,9 @@ class ProductDetailScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF00D4E6), 
-              Color(0xFF8B5CF6), 
-              Color(0xFFE91E63), 
+              Color(0xFF4CAF50), // Light Green
+              Color(0xFF2E7D32), // Dark Green
+              Color(0xFF1B5E20), // Very Dark Green
             ],
           ),
         ),
@@ -163,8 +163,8 @@ class ProductDetailScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [
-                              Color(0xFF00D4E6),
-                              Color(0xFFE91E63),
+                              Color(0xFF4CAF50),
+                              Color(0xFF2E7D32),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(20),
@@ -205,8 +205,8 @@ class ProductDetailScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [
-                                Color(0xFF00D4E6),
-                                Color(0xFFE91E63),
+                                Color(0xFF4CAF50),
+                                Color(0xFF2E7D32),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(25),

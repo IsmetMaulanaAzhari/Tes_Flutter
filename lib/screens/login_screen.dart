@@ -15,16 +15,57 @@ class LoginScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF00D4E6), // Cyan
-              Color(0xFF8B5CF6), // Purple
-              Color(0xFFE91E63), // Pink/Magenta
+              Color(0xFF4CAF50), // Light Green
+              Color(0xFF2E7D32), // Dark Green
+              Color(0xFF1B5E20), // Very Dark Green
             ],
           ),
         ),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Card(
+            child: Stack(
+              children: [
+                // Decorative plant icons
+                Positioned(
+                  top: 50,
+                  left: 20,
+                  child: Icon(
+                    Icons.grass,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 30,
+                  ),
+                ),
+                Positioned(
+                  top: 120,
+                  right: 30,
+                  child: Icon(
+                    Icons.park,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 25,
+                  ),
+                ),
+                Positioned(
+                  bottom: 100,
+                  left: 40,
+                  child: Icon(
+                    Icons.nature,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 28,
+                  ),
+                ),
+                Positioned(
+                  bottom: 180,
+                  right: 25,
+                  child: Icon(
+                    Icons.eco,
+                    color: Colors.white.withOpacity(0.3),
+                    size: 22,
+                  ),
+                ),
+                
+                // Main Card
+                Card(
               elevation: 8,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -34,6 +75,62 @@ class LoginScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Plant Icon with decorative elements
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [
+                            Color(0xFF4CAF50),
+                            Color(0xFF2E7D32),
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.green.shade200,
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.eco,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // App Title with plant theme
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.local_florist,
+                          color: Colors.green.shade600,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          "FreshBite",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2E7D32),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.local_florist,
+                          color: Colors.green.shade600,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    
                     const Text(
                       "Login",
                       style: TextStyle(
@@ -42,7 +139,7 @@ class LoginScreen extends StatelessWidget {
                         color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 24),
 
                     TextField(
                       controller: usernameController,
@@ -54,7 +151,7 @@ class LoginScreen extends StatelessWidget {
                           borderSide: BorderSide(color: Colors.grey.shade400),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.cyan),
+                          borderSide: BorderSide(color: Colors.green),
                         ),
                       ),
                     ),
@@ -71,7 +168,7 @@ class LoginScreen extends StatelessWidget {
                           borderSide: BorderSide(color: Colors.grey.shade400),
                         ),
                         focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.cyan),
+                          borderSide: BorderSide(color: Colors.green),
                         ),
                       ),
                     ),
@@ -96,8 +193,8 @@ class LoginScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [
-                              Color(0xFF00D4E6), // Cyan
-                              Color(0xFFE91E63), // Pink/Magenta
+              Color(0xFF4CAF50), // Light Green
+              Color(0xFF2E7D32), // Dark Green
                             ],
                           ),
                           borderRadius: BorderRadius.circular(8),
@@ -165,6 +262,8 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
+              ],
             ),
           ),
         ),

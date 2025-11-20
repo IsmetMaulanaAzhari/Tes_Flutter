@@ -16,7 +16,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        colorSchemeSeed: Colors.cyan,
+        colorSchemeSeed: Colors.green,
         useMaterial3: true,
         inputDecorationTheme: InputDecorationTheme(
           border: UnderlineInputBorder(),
@@ -24,7 +24,7 @@ class App extends StatelessWidget {
             borderSide: BorderSide(color: Colors.grey.shade400),
           ),
           focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.cyan),
+            borderSide: BorderSide(color: Colors.green),
           ),
           labelStyle: TextStyle(color: Colors.grey.shade600),
           hintStyle: TextStyle(color: Colors.grey.shade400),

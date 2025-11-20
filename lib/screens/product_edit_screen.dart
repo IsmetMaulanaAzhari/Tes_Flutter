@@ -19,9 +19,9 @@ class ProductEditScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF00D4E6), 
-              Color(0xFF8B5CF6), 
-              Color(0xFFE91E63), 
+              Color(0xFF4CAF50), // Light Green
+              Color(0xFF2E7D32), // Dark Green
+              Color(0xFF1B5E20), // Very Dark Green
             ],
           ),
         ),
@@ -70,8 +70,8 @@ class ProductEditScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.cyan.shade50,
-                              Colors.purple.shade50,
+                              Colors.green.shade50,
+                              Colors.green.shade100,
                             ],
                           ),
                           borderRadius: BorderRadius.circular(20),
@@ -108,7 +108,7 @@ class ProductEditScreen extends StatelessWidget {
                             borderSide: BorderSide(color: Colors.grey.shade400),
                           ),
                           focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.cyan),
+                            borderSide: BorderSide(color: Colors.green),
                           ),
                         ),
                       ),
@@ -138,8 +138,8 @@ class ProductEditScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [
-                                Color(0xFF00D4E6),
-                                Color(0xFFE91E63),
+              Color(0xFF4CAF50),
+              Color(0xFF2E7D32),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(25),
