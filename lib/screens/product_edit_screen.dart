@@ -1,16 +1,83 @@
 import 'package:flutter/material.dart';
 
-class ProductEditScreen extends StatelessWidget {
+class ProductEditScreen extends StatefulWidget {
   const ProductEditScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final product = ModalRoute.of(context)!.settings.arguments as Map?;
+  State<ProductEditScreen> createState() => _ProductEditScreenState();
+}
 
-    final nameController =
-        TextEditingController(text: product != null ? product["name"] : "");
-    final priceController = TextEditingController(
-        text: product != null ? product["price"].toString() : "");
+class _ProductEditScreenState extends State<ProductEditScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final priceController = TextEditingController();
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final product = ModalRoute.of(context)?.settings.arguments as Map?;
+      if (product != null) {
+        nameController.text = product["name"] ?? "";
+        priceController.text = product["price"].toString();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    priceController.dispose();
+    super.dispose();
+  }
+
+  void _saveProduct() async {
+    if (!_formKey.currentState!.validate()) return;
+    
+    setState(() {
+      _isLoading = true;
+    });
+
+    final product = ModalRoute.of(context)?.settings.arguments as Map?;
+    
+    // Simulate API call delay
+    await Future.delayed(const Duration(milliseconds: 800));
+    
+    final productData = {
+      'id': product?['id'] ?? DateTime.now().millisecondsSinceEpoch,
+      'name': nameController.text.trim(),
+      'price': int.tryParse(priceController.text) ?? 0,
+    };
+    
+    setState(() {
+      _isLoading = false;
+    });
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 8),
+              Text(product == null 
+                ? "Produk berhasil ditambahkan!" 
+                : "Produk berhasil diperbarui!"),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
+      Navigator.pop(context, productData);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final product = ModalRoute.of(context)?.settings.arguments as Map?;
 
     return Scaffold(
       body: Container(
@@ -62,9 +129,11 @@ class ProductEditScreen extends StatelessWidget {
                       topRight: Radius.circular(30),
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      Container(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Container(
                         width: double.infinity,
                         height: 150,
                         decoration: BoxDecoration(
@@ -96,39 +165,67 @@ class ProductEditScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
-                      TextField(
-                        controller: nameController,
-                        decoration: InputDecoration(
-                          hintText: "Masukkan nama produk",
-                          labelText: "Nama Produk",
-                          prefixIcon: Icon(Icons.shopping_bag_outlined, color: Colors.grey.shade600),
-                          border: UnderlineInputBorder(),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey.shade400),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      TextField(
-                        controller: priceController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          hintText: "Masukkan harga produk",
-                          labelText: "Harga Produk",
-                          prefixIcon: Icon(Icons.attach_money, color: Colors.grey.shade600),
-                          border: UnderlineInputBorder(),
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey.shade400),
-                          ),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(color: Colors.cyan),
+                        const SizedBox(height: 32),
+                        TextFormField(
+                          controller: nameController,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Nama produk tidak boleh kosong';
+                            }
+                            if (value.trim().length < 3) {
+                              return 'Nama produk minimal 3 karakter';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Masukkan nama produk",
+                            labelText: "Nama Produk",
+                            prefixIcon: Icon(Icons.shopping_bag_outlined, color: Colors.grey.shade600),
+                            border: UnderlineInputBorder(),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey.shade400),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            ),
+                            errorBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
                           ),
                         ),
-                      ),
+                        const SizedBox(height: 24),
+                        TextFormField(
+                          controller: priceController,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Harga produk tidak boleh kosong';
+                            }
+                            final price = int.tryParse(value);
+                            if (price == null || price <= 0) {
+                              return 'Harga harus berupa angka positif';
+                            }
+                            if (price > 1000000) {
+                              return 'Harga tidak boleh lebih dari 1.000.000';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Masukkan harga produk",
+                            labelText: "Harga Produk",
+                            prefixIcon: Icon(Icons.attach_money, color: Colors.grey.shade600),
+                            border: UnderlineInputBorder(),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.grey.shade400),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.green),
+                            ),
+                            errorBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.red),
+                            ),
+                          ),
+                        ),
                       
                       const Spacer(),
                       SizedBox(
@@ -145,17 +242,7 @@ class ProductEditScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: ElevatedButton(
-                            onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(product == null 
-                                    ? "Produk berhasil ditambahkan!" 
-                                    : "Produk berhasil diperbarui!"),
-                                  backgroundColor: Colors.green,
-                                ),
-                              );
-                              Navigator.pop(context);
-                            },
+                            onPressed: _isLoading ? null : _saveProduct,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,
@@ -163,18 +250,28 @@ class ProductEditScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(25),
                               ),
                             ),
-                            child: Text(
-                              product == null ? "SIMPAN" : "PERBARUI",
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
+                            child: _isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  ),
+                                )
+                              : Text(
+                                  product == null ? "SIMPAN" : "PERBARUI",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                          ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

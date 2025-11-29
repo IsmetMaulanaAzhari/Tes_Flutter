@@ -1,12 +1,92 @@
 import 'package:flutter/material.dart';
+import '../controllers/UserController.dart';
+import '../models/user.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _userController = UserController();
+  bool _isLoading = false;
+  bool _obscurePassword = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final user = await _userController.login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 8),
+                Text('Selamat datang, ${user.name}!'),
+              ],
+            ),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+        Navigator.pushReplacementNamed(context, "/products");
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.white),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    e.toString().replaceFirst('Exception: ', ''),
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final usernameController = TextEditingController();
-    final passwordController = TextEditingController();
 
     return Scaffold(
       body: Container(
@@ -72,9 +152,11 @@ class LoginScreen extends StatelessWidget {
               ),
               child: Padding(
                 padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                     // Plant Icon with decorative elements
                     Container(
                       width: 80,
@@ -141,34 +223,72 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
 
-                    TextField(
-                      controller: usernameController,
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Email tidak boleh kosong';
+                        }
+                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                          return 'Format email tidak valid';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
-                        hintText: "Type your username",
-                        prefixIcon: Icon(Icons.person_outline, color: Colors.grey.shade600),
+                        hintText: "Type your email",
+                        labelText: "Email",
+                        prefixIcon: Icon(Icons.email_outlined, color: Colors.grey.shade600),
                         border: UnderlineInputBorder(),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.grey.shade400),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.green),
+                        ),
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
                         ),
                       ),
                     ),
                     const SizedBox(height: 24),
 
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Password tidak boleh kosong';
+                        }
+                        if (value.length < 6) {
+                          return 'Password minimal 6 karakter';
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                         hintText: "Type your password",
+                        labelText: "Password",
                         prefixIcon: Icon(Icons.lock_outline, color: Colors.grey.shade600),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.grey.shade600,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
                         border: UnderlineInputBorder(),
                         enabledBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.grey.shade400),
                         ),
                         focusedBorder: UnderlineInputBorder(
                           borderSide: BorderSide(color: Colors.green),
+                        ),
+                        errorBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
                         ),
                       ),
                     ),
@@ -200,9 +320,7 @@ class LoginScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacementNamed(context, "/products");
-                          },
+                          onPressed: _isLoading ? null : _handleLogin,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -210,14 +328,23 @@ class LoginScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          child: const Text(
-                            "LOGIN",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
+                          child: _isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : const Text(
+                                "LOGIN",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
                         ),
                       ),
                     ),
@@ -259,7 +386,8 @@ class LoginScreen extends StatelessWidget {
                       onPressed: () => Navigator.pushNamed(context, "/register"),
                       child: const Text("Belum punya akun? Register"),
                     ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

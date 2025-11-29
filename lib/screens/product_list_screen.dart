@@ -29,6 +29,21 @@ class _ProductListScreenState extends State<ProductListScreen> {
     });
   }
 
+  void _addProduct(Map<String, dynamic> newProduct) {
+    setState(() {
+      products.add(newProduct);
+    });
+  }
+
+  void _updateProduct(Map<String, dynamic> updatedProduct) {
+    setState(() {
+      final index = products.indexWhere((product) => product["id"] == updatedProduct["id"]);
+      if (index != -1) {
+        products[index] = updatedProduct;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -219,7 +234,22 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
+                                    icon: const Icon(Icons.edit, color: Colors.blue),
+                                    tooltip: "Edit Produk",
+                                    onPressed: () async {
+                                      final result = await Navigator.pushNamed(
+                                        context, 
+                                        "/product-edit", 
+                                        arguments: p
+                                      );
+                                      if (result != null && result is Map) {
+                                        _updateProduct(Map<String, dynamic>.from(result));
+                                      }
+                                    },
+                                  ),
+                                  IconButton(
                                     icon: const Icon(Icons.delete, color: Colors.red),
+                                    tooltip: "Hapus Produk",
                                     onPressed: () {
                                       showDialog(
                                         context: context,
@@ -246,8 +276,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                   const Icon(Icons.arrow_forward_ios_rounded, size: 16),
                                 ],
                               ),
-                              onTap: () {
-                                Navigator.pushNamed(context, "/product-detail", arguments: p);
+                              onTap: () async {
+                                final result = await Navigator.pushNamed(context, "/product-detail", arguments: p);
+                                if (result != null && result is Map) {
+                                  _updateProduct(Map<String, dynamic>.from(result));
+                                }
                               },
                             ),
                           );
@@ -270,7 +303,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
           borderRadius: BorderRadius.circular(16),
         ),
         child: FloatingActionButton(
-          onPressed: () => Navigator.pushNamed(context, "/product-edit"),
+          onPressed: () async {
+            final result = await Navigator.pushNamed(context, "/product-edit");
+            if (result != null && result is Map) {
+              _addProduct(Map<String, dynamic>.from(result));
+            }
+          },
           backgroundColor: Colors.transparent,
           elevation: 0,
           child: const Icon(Icons.add, color: Colors.white),

@@ -212,8 +212,12 @@ class ProductDetailScreen extends StatelessWidget {
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, "/product-edit", arguments: product);
+                            onPressed: () async {
+                              final result = await Navigator.pushNamed(context, "/product-edit", arguments: product);
+                              if (result != null && result is Map) {
+                                // Return the updated product to the list screen
+                                Navigator.pop(context, result);
+                              }
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
