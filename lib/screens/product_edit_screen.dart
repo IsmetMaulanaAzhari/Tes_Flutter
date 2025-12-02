@@ -137,38 +137,40 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        Container(
-                        width: double.infinity,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.green.shade50,
-                              Colors.green.shade100,
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.grey.shade300, width: 2),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.camera_alt_outlined,
-                              size: 40,
-                              color: Colors.grey.shade600,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Tambah Foto Produk",
-                              style: TextStyle(
-                                color: Colors.grey.shade600,
-                                fontSize: 16,
+                        Center(
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.green.shade50,
+                                  Colors.green.shade100,
+                                ],
                               ),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.grey.shade300, width: 2),
                             ),
-                          ],
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.camera_alt_outlined,
+                                  size: 40,
+                                  color: Colors.grey.shade600,
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "Tambah Foto Produk",
+                                  style: TextStyle(
+                                    color: Colors.grey.shade600,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
                         const SizedBox(height: 32),
                         TextFormField(
                           controller: nameController,
