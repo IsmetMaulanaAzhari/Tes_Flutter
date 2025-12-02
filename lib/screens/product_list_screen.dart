@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../controllers/ProductController.dart';
+import '../models/products.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -8,10 +10,33 @@ class ProductListScreen extends StatefulWidget {
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  final List<Map<String, dynamic>> products = [
-    {"id": 1, "name": "Kangkung Segar", "price": 8000},
-    {"id": 2, "name": "Selada Keriting", "price": 12000},
-  ];
+  final ProductController _productController = ProductController();
+  List<Product> products = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    try {
+      setState(() => isLoading = true);
+      final loadedProducts = await _productController.getAllProducts();
+      setState(() {
+        products = loadedProducts;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal memuat produk: $e')),
+        );
+      }
+    }
+  }
 
   String _getProductImage(String productName) {
     if (productName.toLowerCase().contains('selada')) {
@@ -23,25 +48,58 @@ class _ProductListScreenState extends State<ProductListScreen> {
     }
   }
 
-  void _deleteProduct(int id) {
-    setState(() {
-      products.removeWhere((product) => product["id"] == id);
-    });
-  }
-
-  void _addProduct(Map<String, dynamic> newProduct) {
-    setState(() {
-      products.add(newProduct);
-    });
-  }
-
-  void _updateProduct(Map<String, dynamic> updatedProduct) {
-    setState(() {
-      final index = products.indexWhere((product) => product["id"] == updatedProduct["id"]);
-      if (index != -1) {
-        products[index] = updatedProduct;
+  Future<void> _deleteProduct(int id) async {
+    try {
+      await _productController.deleteProduct(id);
+      await _loadProducts();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Produk berhasil dihapus')),
+        );
       }
-    });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menghapus: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _addProduct(Product newProduct) async {
+    try {
+      await _productController.createProduct(newProduct);
+      await _loadProducts();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Produk berhasil ditambahkan')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal menambah produk: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _updateProduct(Product updatedProduct) async {
+    try {
+      await _productController.updateProduct(updatedProduct.id!, updatedProduct);
+      await _loadProducts();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Produk berhasil diupdate')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal mengupdate: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -116,17 +174,22 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
               ),
               Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(top: 20),
-                  padding: const EdgeInsets.all(20),
-                  decoration: const BoxDecoration(
+                child: RefreshIndicator(
+                  onRefresh: _loadProducts,
+                  color: const Color(0xFF4CAF50),
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.all(20),
+                    decoration: const BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
                   ),
-                  child: products.isEmpty 
+                  child: isLoading
+                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF4CAF50)))
+                    : products.isEmpty 
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -182,7 +245,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: Image.network(
-                                    _getProductImage(p["name"].toString()),
+                                    _getProductImage(p.name),
                                     fit: BoxFit.cover,
                                     loadingBuilder: (context, child, loadingProgress) {
                                       if (loadingProgress == null) return child;
@@ -216,14 +279,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 ),
                               ),
                               title: Text(
-                                p["name"].toString(),
+                                p.name,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                 ),
                               ),
                               subtitle: Text(
-                                "Rp ${p["price"]}",
+                                "Rp ${p.price}",
                                 style: const TextStyle(
                                   color: Color(0xFF4CAF50),
                                   fontWeight: FontWeight.w600,
@@ -240,10 +303,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                       final result = await Navigator.pushNamed(
                                         context, 
                                         "/product-edit", 
-                                        arguments: p
+                                        arguments: p.toJson()
                                       );
                                       if (result != null && result is Map) {
-                                        _updateProduct(Map<String, dynamic>.from(result));
+                                        final updated = Product.fromJson(Map<String, dynamic>.from(result));
+                                        await _updateProduct(updated);
                                       }
                                     },
                                   ),
@@ -255,7 +319,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                         context: context,
                                         builder: (context) => AlertDialog(
                                           title: const Text("Hapus Produk"),
-                                          content: Text("Yakin ingin menghapus ${p["name"]}?"),
+                                          content: Text("Yakin ingin menghapus ${p.name}?"),
                                           actions: [
                                             TextButton(
                                               onPressed: () => Navigator.pop(context),
@@ -263,7 +327,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                             ),
                                             TextButton(
                                               onPressed: () {
-                                                _deleteProduct(p["id"]);
+                                                _deleteProduct(p.id!);
                                                 Navigator.pop(context);
                                               },
                                               child: const Text("Hapus", style: TextStyle(color: Colors.red)),
@@ -277,15 +341,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 ],
                               ),
                               onTap: () async {
-                                final result = await Navigator.pushNamed(context, "/product-detail", arguments: p);
+                                final result = await Navigator.pushNamed(context, "/product-detail", arguments: p.toJson());
                                 if (result != null && result is Map) {
-                                  _updateProduct(Map<String, dynamic>.from(result));
+                                  final updated = Product.fromJson(Map<String, dynamic>.from(result));
+                                  await _updateProduct(updated);
                                 }
                               },
                             ),
                           );
                         },
                       ),
+                  ),
                 ),
               ),
             ],
@@ -306,7 +372,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
           onPressed: () async {
             final result = await Navigator.pushNamed(context, "/product-edit");
             if (result != null && result is Map) {
-              _addProduct(Map<String, dynamic>.from(result));
+              final newProduct = Product.fromJson(Map<String, dynamic>.from(result));
+              await _addProduct(newProduct);
             }
           },
           backgroundColor: Colors.transparent,

@@ -6,14 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 
 class UserController {
-  static const String _baseUrl =
-      'https://blowsiest-zaiden-unsmoothly.ngrok-free.dev';
+  static const String _baseUrl = 'http://127.0.0.1:8000';
 
   static const String _tokenKey = 'access_token';
   static const String _tokenTypeKey = 'token_type';
   
-  // Demo mode untuk testing tanpa server
-  static const bool _demoMode = true;
+  // Demo mode untuk testing tanpa server (set false untuk pakai server Laravel)
+  static const bool _demoMode = false;
   
   // Users untuk testing
   static final List<Map<String, dynamic>> _demoUsers = [

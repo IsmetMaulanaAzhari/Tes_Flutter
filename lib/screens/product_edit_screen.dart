@@ -11,6 +11,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
   final _formKey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final priceController = TextEditingController();
+  final descriptionController = TextEditingController();
   bool _isLoading = false;
 
   @override
@@ -21,6 +22,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
       if (product != null) {
         nameController.text = product["name"] ?? "";
         priceController.text = product["price"].toString();
+        descriptionController.text = product["description"] ?? "";
       }
     });
   }
@@ -29,6 +31,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
   void dispose() {
     nameController.dispose();
     priceController.dispose();
+    descriptionController.dispose();
     super.dispose();
   }
 
@@ -48,6 +51,7 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
       'id': product?['id'] ?? DateTime.now().millisecondsSinceEpoch,
       'name': nameController.text.trim(),
       'price': int.tryParse(priceController.text) ?? 0,
+      'description': descriptionController.text.trim(),
     };
     
     setState(() {
@@ -226,6 +230,26 @@ class _ProductEditScreenState extends State<ProductEditScreen> {
                             ),
                           ),
                         ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Description Field
+                      TextFormField(
+                        controller: descriptionController,
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: "Masukkan deskripsi produk (opsional)",
+                          labelText: "Deskripsi",
+                          prefixIcon: Icon(Icons.description, color: Colors.grey.shade600),
+                          border: UnderlineInputBorder(),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.green),
+                          ),
+                        ),
+                      ),
                       
                       const Spacer(),
                       SizedBox(

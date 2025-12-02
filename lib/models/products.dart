@@ -14,12 +14,21 @@ class Product {
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    // Parse price - handle both int, double, and string formats
+    int parsedPrice = 0;
+    final priceValue = json['price'];
+    if (priceValue is int) {
+      parsedPrice = priceValue;
+    } else if (priceValue is double) {
+      parsedPrice = priceValue.toInt();
+    } else if (priceValue is String) {
+      parsedPrice = double.tryParse(priceValue)?.toInt() ?? 0;
+    }
+
     return Product(
       id: json['id'],
       name: json['name'] ?? '',
-      price: (json['price'] is String) 
-          ? int.tryParse(json['price']) ?? 0 
-          : json['price'] ?? 0,
+      price: parsedPrice,
       description: json['description'],
       imageUrl: json['image_url'] ?? json['imageUrl'],
     );

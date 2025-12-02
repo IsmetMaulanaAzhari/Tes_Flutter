@@ -2,13 +2,13 @@ class User {
   final int? id;
   final String name;
   final String email;
-  final String password;
+  final String? password; // Nullable karena Laravel tidak return password
   
   User({
     this.id,
     required this.name,
     required this.email,
-    required this.password,
+    this.password,
   });
 
   factory User.fromJson(Map<String, dynamic> json){
@@ -16,7 +16,7 @@ class User {
       id: json['id'],
       name: json['name'],
       email: json['email'],
-      password: json['password'],
+      password: json['password'], // Bisa null dari server
     );
   }
 
